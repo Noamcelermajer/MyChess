@@ -19,7 +19,7 @@
 
 Board::Board(std::string boardStr = "rnbkqbnrpppppppp################################PPPPPPPPRNBKQBNR1")
 {
-	init(boardStr);
+	init(boardStr);//calling init function because it was more confortable for my eyes to debug :)
 }
 Board::Board(const Board& b)
 {
@@ -30,9 +30,9 @@ Board::Board(const Board& b)
 		for (int j = 0; j < SIZE; j++)
 		{
 			if (b._pieces[i][j] != nullptr)
-				_pieces[i][j] = b._pieces[i][j]->clone();
+				_pieces[i][j] = b._pieces[i][j]->clone();//copy pieces by pieces the board 
 			else
-				_pieces[i][j] = nullptr;
+				_pieces[i][j] = nullptr; // in our board every 'blank' place are nullptr is more easy than have a empty class
 		}
 	}
 }
@@ -43,7 +43,7 @@ Board::~Board()
 		for (int column = 0; column < 8; column++)
 		{
 			if (_pieces[row][column] != nullptr)
-				delete _pieces[row][column];
+				delete _pieces[row][column];//delete pieces by pieces
 		}
 	}
 }
@@ -54,7 +54,7 @@ std::array<std::array<Piece*, SIZE>, SIZE> Board::get_pieces() const
 }
 void Board::set_piece(int xPos, int yPos, Piece* p)
 {
-	_pieces[xPos][yPos] = p;
+	_pieces[xPos][yPos] = p;//genius ;)
 }
 std::array<Piece*, SIZE> Board::operator[](int i) const
 {
@@ -65,32 +65,33 @@ std::array<Piece*, SIZE> Board::operator[](int i) const
 
 void Board::move_piece(int xSrc, int ySrc, int xDst, int yDst)
 {
+	//make the move by changing each point (x, y)
 	_pieces[xSrc][ySrc]->set_x(xDst);
 	_pieces[xSrc][ySrc]->set_y(yDst);
 	_pieces[xDst][yDst] = _pieces[xSrc][ySrc]->clone();
-	delete _pieces[xSrc][ySrc];
+	delete _pieces[xSrc][ySrc];//delte the old one...
 	_pieces[xSrc][ySrc] = nullptr;
 
 	_pieces[xDst][yDst]->set_first_turn();
 
 	if (_pieces[xDst][yDst]->to_string() == 'k')
-		_blackKing = (King*)_pieces[xDst][yDst];
+		_blackKing = (King*)_pieces[xDst][yDst];//generate our king
 	else if(_pieces[xDst][yDst]->to_string() == 'K')
-		_whiteKing = (King*)_pieces[xDst][yDst];
+		_whiteKing = (King*)_pieces[xDst][yDst];//generate our king
 }
-bool Board::is_checkmate(bool whiteChecked) const
+bool Board::is_checkmate(bool whiteChecked) const//this func pass all board check if each of the Piece that are in the color of the king can pass trough the menace and save the king from getting mate if not mean that the king lost rip..
 {
 	for (int i = 0; i < SIZE; i++)
 	{
 		for (int j = 0; j < SIZE; j++)
 		{
-			if (_pieces[i][j] != nullptr && _pieces[i][j]->get_is_white() == whiteChecked)
+			if (_pieces[i][j] != nullptr && _pieces[i][j]->get_is_white() == whiteChecked)//is is it a white / black
 			{
 				for (int k = 0; k < SIZE; k++)
 				{
 					for (int l = 0; l < SIZE; l++)
 					{
-						if (_pieces[i][j]->is_valid_move(k, l, *this))
+						if (_pieces[i][j]->is_valid_move(k, l, *this))//check if he can access to the king to ptrotect him
 							return false;
 					}
 				}
@@ -112,11 +113,11 @@ void Board::init(std::string boardStr)
 			boardStr[stringIndex] = tolower(boardStr[stringIndex]);
 
 
-			switch (boardStr[stringIndex])
+			switch (boardStr[stringIndex])//case for each of the char
 			{
 			case KING:
 				if (isWhite)
-					_whiteKing = new King(isWhite, row, column);
+					_whiteKing = new King(isWhite, row, column);//init our king..
 				else
 					_blackKing = new King(isWhite, row, column);
 				_pieces[row][column] = isWhite ? _whiteKing : _blackKing;
@@ -140,7 +141,7 @@ void Board::init(std::string boardStr)
 				_pieces[row][column] = nullptr;
 				break;
 			default:
-				std::cerr << "Invalid character in game string" << std::endl;
+				std::cerr << "Invalid character in game string" << std::endl;//genius :)
 				break;
 			}
 
@@ -153,30 +154,30 @@ int Board::move(int xSrc, int ySrc, int xDst, int yDst, bool turn)
 	if ((xSrc > OUTSIDE || xSrc < 0) ||
 		(ySrc > OUTSIDE || ySrc < 0) ||
 		(xDst > OUTSIDE || xDst < 0) ||
-		(yDst > OUTSIDE || yDst < 0))
+		(yDst > OUTSIDE || yDst < 0))//check if the index ae'nt out of bound :0
 	{
 		return INVALID_COORDINATE;	//can move a units out of range of the board it will fall of
 	}
 	if (xSrc == xDst && ySrc == yDst)
-		return COORDINATE_EQUALS_CURRENT;
+		return COORDINATE_EQUALS_CURRENT; //The units cant move to is current position....
 	else
 	{
 		if (_pieces[xSrc][ySrc] != nullptr)
 		{
-			if (_pieces[xSrc][ySrc]->get_is_white() != turn)
+			if (_pieces[xSrc][ySrc]->get_is_white() != turn)//mean that there is no Piece at the selected point
 				return NO_PIECE_SELECTED;
-			returnCode = _pieces[xSrc][ySrc]->is_valid_move(xDst, yDst, *this);
+			returnCode = _pieces[xSrc][ySrc]->is_valid_move(xDst, yDst, *this);//check is valid move 
 
-			Board toCheck(*this);
-			toCheck.move_piece(xSrc, ySrc, xDst, yDst);
-			if (turn)
+			Board toCheck(*this);//copy our board to check it without changing the real one 
+			toCheck.move_piece(xSrc, ySrc, xDst, yDst);//make the move
+			if (turn)//if whiteTUrn 
 			{
-				if (toCheck._whiteKing->is_checked(toCheck._whiteKing->get_x(), toCheck._whiteKing->get_y(), toCheck))
+				if (toCheck._whiteKing->is_checked(toCheck._whiteKing->get_x(), toCheck._whiteKing->get_y(), toCheck))//if is checked mean that the movement make the king checked
 					return MOVEMENT_MAKE_CHECK;
 				if (toCheck._blackKing->is_checked(toCheck._blackKing->get_x(), toCheck._blackKing->get_y(), toCheck))
 					returnCode = GOOD_MOVE_WITH_CHECK;
 			}
-			else
+			else//black turn 
 			{
 				if (toCheck._blackKing->is_checked(_blackKing->get_x(), toCheck._blackKing->get_y(), toCheck))
 					return MOVEMENT_MAKE_CHECK;
@@ -184,20 +185,20 @@ int Board::move(int xSrc, int ySrc, int xDst, int yDst, bool turn)
 					returnCode = GOOD_MOVE_WITH_CHECK;
 
 			}
-			if (returnCode == GOOD_MOVE)
+			if (returnCode == GOOD_MOVE)//if return 0
 			{
-				move_piece(xSrc, ySrc, xDst, yDst);
+				move_piece(xSrc, ySrc, xDst, yDst);//make the move 
 			}
-			else if (returnCode == GOOD_MOVE_WITH_CHECK)
+			else if (returnCode == GOOD_MOVE_WITH_CHECK)//if code return that the action made a check 
 			{
-				move_piece(xSrc, ySrc, xDst, yDst);
+				move_piece(xSrc, ySrc, xDst, yDst);//make the move and chack after that the king isnt checkmated
 				if (is_checkmate(!turn))
 					return CHECKMATE;
 			}
-			return returnCode;
+			return returnCode;//if not checkmate
 		}
 		else
-			return NO_PIECE_SELECTED;
+			return NO_PIECE_SELECTED; //...
 	}
 
 }

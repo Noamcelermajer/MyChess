@@ -18,7 +18,7 @@ int main()
 	Pipe p;
 	bool isConnect = p.connect();
 	Game gameInstance(true, "rnbkqbnrpppppppp################################PPPPPPPPRNBKQBNR");
-	string ans, code;
+	string ans, code;//get my code
 	while (!isConnect)
 	{
 		cout << "cant connect to graphics" << endl;

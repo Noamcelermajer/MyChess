@@ -12,7 +12,7 @@ King::King(const King& k) : Piece(k._isWhite, k._xPos, k._yPos)
 King::~King()
 {
 }
-
+/*used for copy-ctor*/
 King* King::clone() const
 {
 	return new King(*this);
@@ -45,7 +45,7 @@ bool King::is_checked(int xPos, int yPos, const Board& b) const
 	}
 	return false;
 }
-
+/*THis function check the case that the king checked by other king*/
 bool King::is_checked_by_king(int xPos, int yPos, const Board& b) const
 {
 	for (int i = xPos - 1; i <= xPos + 1; i++)
@@ -57,12 +57,12 @@ bool King::is_checked_by_king(int xPos, int yPos, const Board& b) const
 					return true;
 	return false;
 }
-
+/*Check if king move is valid by checking if it inn range of 1 from src cuz the king can move far from dis*/
 int King::is_valid_move(int xDst, int yDst, const Board &b) const
 {
 	if ((abs(xDst - _xPos) == MAX_RANGE && abs(yDst - _yPos) == MAX_RANGE) ||
 		(abs(xDst - _xPos) == MAX_RANGE && abs(yDst - _yPos) == 0) ||
-		(abs(xDst - _xPos) == 0 && abs(yDst - _yPos) == 1)
+		(abs(xDst - _xPos) == 0 && abs(yDst - _yPos) == 1)//out of bouds;
 		)
 	{
 		if (b[xDst][yDst] == nullptr || b[xDst][yDst]->get_is_white() != _isWhite)
@@ -75,15 +75,16 @@ int King::is_valid_move(int xDst, int yDst, const Board &b) const
 			toCheck.set_piece(xDst, yDst, (*this).clone());
 			// we need to check board as if king is in new position
 			if (!is_checked(xDst, yDst, toCheck))
-				return GOOD_MOVE;
+				return GOOD_MOVE;//good move
 			else
-				return MOVEMENT_MAKE_CHECK;
+				return MOVEMENT_MAKE_CHECK;//made a check
 		}
 		else
-			return ALREDY_PIECE_IN_DST;
+			return ALREDY_PIECE_IN_DST;//mean that the dst piece in taken by allies
 	}
 	return INVALID_MOVEMENT;
 }
+/*ToString like the classes inplemented in java and c#*/
 char King::to_string() const
 {
 	return _isWhite ? 'K' : 'k';
