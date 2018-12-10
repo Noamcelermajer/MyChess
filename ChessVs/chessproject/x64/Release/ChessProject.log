@@ -1,0 +1,16 @@
+﻿  Bishop.cpp
+  Board.cpp
+  Game.cpp
+  King.cpp
+  Knight.cpp
+  Pawn.cpp
+  Piece.cpp
+  Player.cpp
+  Queen.cpp
+  Rook.cpp
+  Source.cpp
+  stdafx.cpp
+  Generating code
+  All 248 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  ChessProject.vcxproj -> C:\Users\noamc\OneDrive\Desktop\MyChess\ChessVs\x64\Release\ChessProject.exe
